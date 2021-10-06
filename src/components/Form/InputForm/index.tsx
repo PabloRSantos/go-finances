@@ -8,9 +8,10 @@ import * as S from './styles';
 interface Props extends TextInputProps {
   control: Control
   name: string
+  error: string
 }
 
-export const InputForm: React.FC<Props> = ({ control, name, ...rest }) => {
+export const InputForm: React.FC<Props> = ({ control, name, error, ...rest }) => {
   return (
     <S.Container>
       <Controller
@@ -24,6 +25,7 @@ export const InputForm: React.FC<Props> = ({ control, name, ...rest }) => {
         )}
         name={name}
       />
+      {error && <S.Error>{ error }</S.Error>}
     </S.Container>
   );
 };
