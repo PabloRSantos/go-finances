@@ -7,6 +7,7 @@ import {
 } from "react-native-iphone-x-helper";
 import { FlatList } from "react-native";
 import { DataListProps } from ".";
+import { BorderlessButton } from "react-native-gesture-handler";
 
 export const Container = styled.View`
   flex: 1;
@@ -39,6 +40,10 @@ export const UserInfo = styled.View`
   flex-direction: row;
   align-items: center;
 `;
+
+export const LogoutButton = styled(BorderlessButton)`
+
+`
 
 export const Photo = styled.Image`
   width: ${RFValue(48)}px;
