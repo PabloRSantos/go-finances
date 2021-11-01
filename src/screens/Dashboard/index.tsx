@@ -16,6 +16,7 @@ export interface DataListProps extends TransactionCardProps {
 
 interface HighlightProps {
   amount: string;
+  lastTransaction: string
 }
 
 interface HighlightData {
@@ -27,21 +28,30 @@ interface HighlightData {
 export const Dashboard: React.FC = () => {
   const theme = useTheme()
   const [isLoading, setIsLoading] = useState(true);
-  const [transactions, setTransaction] = useState<DataListProps[]>();
+  const [transactionsData, setTransactionData] = useState<DataListProps[]>();
   const [highlightData, setHighlightData] = useState<HighlightData>(
     {} as HighlightData
   );
 
+  function getLastTransactionDate(transactions: DataListProps[], type: 'up' | 'down') {
+    const transactionsDate = transactions
+      .filter(transaction => transaction.type === type)
+      .map(transaction => new Date(transaction.date).getTime())
+
+    const lastTransaction = new Date(Math.max.apply(Math, transactionsDate))
+    return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString('pt-BR', { month: 'long' })}`
+  }
+
   async function loadTransaction() {
     const dataKey = "@gofinances:transactions";
     const response = await AsyncStorage.getItem(dataKey);
-    const transactions = response ? JSON.parse(response) : [];
+    const transactions: DataListProps[] = response ? JSON.parse(response) : [];
 
     let entriesTotal = 0;
     let expensiveTotal = 0;
 
-    const transactionsFormatted: DataListProps[] = transactions.map(
-      (transaction: DataListProps) => {
+    const transactionsFormatted = transactions.map(
+      transaction => {
         if (transaction.type === "up") {
           entriesTotal += Number(transaction.amount);
         } else {
@@ -65,7 +75,13 @@ export const Dashboard: React.FC = () => {
         };
       }
     );
+    setTransactionData(transactionsFormatted);
 
+    
+    const lastTransactionEntries = getLastTransactionDate(transactions, 'up')
+    const lastTransactionExpensive = getLastTransactionDate(transactions, 'down')
+    const totalInterval = `1 a ${lastTransactionExpensive}`
+    
     const total = entriesTotal - expensiveTotal;
     setHighlightData({
       entries: {
@@ -73,21 +89,23 @@ export const Dashboard: React.FC = () => {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransaction: `Última entrada dia ${lastTransactionEntries}`
       },
       expensive: {
         amount: expensiveTotal.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransaction: `Última entrada dia ${lastTransactionExpensive}`
       },
       total: {
         amount: total.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransaction: totalInterval
       },
     });
-    setTransaction(transactionsFormatted);
     setIsLoading(false)
   }
 
@@ -129,26 +147,26 @@ export const Dashboard: React.FC = () => {
             <HighlightCard
               title="Entradas"
               amount={highlightData.entries.amount}
-              lastTransaction="Última entrada dia 13 de abril"
+              lastTransaction={highlightData.entries.lastTransaction}
               type="up"
             />
             <HighlightCard
               title="Saídas"
               amount={highlightData.expensive.amount}
-              lastTransaction="Última entrada dia 13 de abril"
+              lastTransaction={highlightData.expensive.lastTransaction}
               type="down"
             />
             <HighlightCard
               title="Total"
               amount={highlightData.total.amount}
-              lastTransaction="Última entrada dia 13 de abril"
+              lastTransaction={highlightData.total.lastTransaction}
               type="total"
             />
           </S.HighlightCards>
           <S.Transactions>
             <S.Title>Listagem</S.Title>
             <S.TransactionList
-              data={transactions}
+              data={transactionsData}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => <TransactionCard data={item} />}
             />
