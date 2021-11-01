@@ -8,6 +8,15 @@ import { MaterialIcons } from "@expo/vector-icons";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList {
+      [key: string]: any;
+    }
+  }
+}
+
+
 export const AppRoutes = () => {
   const theme = useTheme();
 
@@ -19,8 +28,7 @@ export const AppRoutes = () => {
         tabBarInactiveTintColor: theme.colors.text,
         tabBarLabelPosition: "beside-icon",
         tabBarStyle: {
-          height: 88,
-          paddingVertical: Platform.OS === "ios" ? 20 : 0,
+          height: 68,
         },
       }}
     >

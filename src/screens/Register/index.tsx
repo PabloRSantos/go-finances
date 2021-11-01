@@ -9,6 +9,9 @@ import { useForm } from 'react-hook-form'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as S from './styles';
+import uuid from 'react-native-uuid'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 interface FormData {
   name: string;
@@ -18,19 +21,19 @@ interface FormData {
 const schema = Yup.object().shape({
   name: Yup.string().required('Nome é obrigatório'),
   amount: Yup.number()
-    .typeError('Informe um valor númerico')
+    .typeError('Informe um valor numérico')
     .positive('O valor não pode ser negativo')
 }).required()
 
 export const Register = () => {
+  const navigation = useNavigation()
   const [transactionType, setTransactionType] = useState('')
   const [categoryModalOpen, setCategoryModalOpen] = useState(false)
   const [category, setCategory] = useState({
     key: 'category',
     name: 'Categoria',
   })
-
-  const { control, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) })
+  const { control, handleSubmit, formState: { errors }, reset } = useForm({ resolver: yupResolver(schema) })
 
   const handleTransactionsTypeSelect = (type: 'up' | 'down') => {
     setTransactionType(type)
@@ -44,7 +47,7 @@ export const Register = () => {
     setCategoryModalOpen(true)
   }
 
-  const handleRegister = (form: FormData) => {
+  const handleRegister = async (form: FormData) => {
     if (!transactionType) {
       return Alert.alert('Selecione o tipo da transição')
     }
@@ -53,11 +56,33 @@ export const Register = () => {
       return Alert.alert('Selecione a categoria')
     }
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
+      date: new Date()
+    }
+
+    try {
+      const dataKey = '@gofinances:transactions'
+      const data = await AsyncStorage.getItem(dataKey)
+      const currentData = data ? JSON.parse(data) : []
+
+      const dataFormatted = [...currentData, newTransaction ]
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted))
+      reset()
+      setTransactionType('')
+      setCategory({
+        key: 'category',
+        name: 'Categoria',
+      })
+      navigation.navigate('Listagem')
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Não foi possível salvar')
     }
   }
 
