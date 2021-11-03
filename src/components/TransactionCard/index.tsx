@@ -3,8 +3,6 @@ import { categories } from '../../utils/categories';
 
 import * as S from './styles';
 
-
-
 export interface TransactionCardProps {
   type: 'up' | 'down'
   name: string
