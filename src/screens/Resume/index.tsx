@@ -10,6 +10,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { addMonths, format, subMonths } from "date-fns";
+import { ActivityIndicator } from "react-native";
 
 interface TransactionData {
   type: "up" | "down";
@@ -30,6 +31,7 @@ interface CategoryData {
 
 export const Resume: React.FC = () => {
   const theme = useTheme();
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>(
     []
@@ -45,6 +47,7 @@ export const Resume: React.FC = () => {
   }
 
   async function loadData() {
+    setIsLoading(true)
     const dataKey = "@gofinances:transactions";
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted: TransactionData[] = response
@@ -90,6 +93,7 @@ export const Resume: React.FC = () => {
     });
 
     setTotalByCategories(totalByCategory);
+    setIsLoading(false)
   }
 
   useFocusEffect(
@@ -104,6 +108,11 @@ export const Resume: React.FC = () => {
         <S.Title>Resumo por categoria</S.Title>
       </S.Header>
 
+      {isLoading ? (
+        <S.LoadContainer>
+          <ActivityIndicator color={theme.colors.primary} size="large" />
+        </S.LoadContainer>
+      ) : (
       <S.Content
         contentContainerStyle={{
           flex: 1,
@@ -150,6 +159,7 @@ export const Resume: React.FC = () => {
           />
         ))}
       </S.Content>
+      )}
     </S.Container>
   );
 };

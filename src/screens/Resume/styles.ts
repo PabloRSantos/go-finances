@@ -24,10 +24,15 @@ export const Title = styled.Text`
     font-size: ${RFValue(18)}px;
 `
 
+export const LoadContainer = styled.View`
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+`
+
 export const Content = styled(ScrollView).attrs({
     showVerticalScrollIndicator: false
 })`
-    
 `
 
 export const ChartContainer = styled.View`
