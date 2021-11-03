@@ -9,6 +9,7 @@ import {
 } from "../../components/TransactionCard";
 import * as S from "./styles";
 import { useTheme } from "styled-components/native";
+import { useAuth } from "../../hooks/auth";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -27,6 +28,7 @@ interface HighlightData {
 
 export const Dashboard: React.FC = () => {
   const theme = useTheme()
+  const { signOut, user } = useAuth()
   const [isLoading, setIsLoading] = useState(true);
   const [transactionsData, setTransactionData] = useState<DataListProps[]>();
   const [highlightData, setHighlightData] = useState<HighlightData>(
@@ -128,16 +130,16 @@ export const Dashboard: React.FC = () => {
               <S.UserInfo>
                 <S.Photo
                   source={{
-                    uri: "https://avatars.githubusercontent.com/u/64219605?v=4",
+                    uri: user.photo,
                   }}
                 />
                 <S.User>
                   <S.UserGreeting>Olá, </S.UserGreeting>
-                  <S.UserName>Rodrigo</S.UserName>
+                  <S.UserName>{user.name}</S.UserName>
                 </S.User>
               </S.UserInfo>
 
-              <S.LogoutButton onPress={() => {}}>
+              <S.LogoutButton onPress={signOut}>
                 <S.Icon name="power" />
               </S.LogoutButton>
             </S.UserWrapper>

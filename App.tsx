@@ -10,10 +10,8 @@ import {
   Poppins_500Medium,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
-import { AppRoutes } from "./src/routes/app.routes";
 import { StatusBar } from 'react-native';
-import { SignIn } from './src/screens/SignIn';
-import { AuthProvider } from './src/hooks/auth';
+import { AuthProvider, useAuth } from './src/hooks/auth';
 import { Routes } from './src/routes';
 
 export default function App() {
@@ -22,6 +20,7 @@ export default function App() {
     Poppins_500Medium,
     Poppins_700Bold,
   });
+
 
   if(!fontsLoaded) {
     return <AppLoading />

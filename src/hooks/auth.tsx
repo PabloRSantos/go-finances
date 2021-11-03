@@ -23,6 +23,7 @@ interface IAuthContextData {
   userStorageLoading: boolean
   signInWithGoogle: () => Promise<void>;
   signInWithApple: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<IAuthContextData>({} as IAuthContextData);
@@ -60,10 +61,11 @@ export const AuthProvider: React.FC = ({ children }) => {
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`
       );
       const userInfo = await response.json();
+      
       const userLogged = {
         id: String(userInfo.id),
         email: userInfo.email,
-        name: userInfo.giver_name,
+        name: userInfo.given_name,
         photo: userInfo.picture,
       }
       setUser(userLogged);
@@ -80,10 +82,13 @@ export const AuthProvider: React.FC = ({ children }) => {
     });
 
     if (credential) {
+      const name = credential.fullName!.givenName!
+      const photo = `https://ui-avatars.com/api/?name=${name}&length=1`
       const userLogged = {
         id: String(credential.user),
         email: credential.email!,
-        name: credential.fullName!.givenName!,
+        name,
+        photo
       };
 
       setUser(userLogged)
@@ -91,8 +96,13 @@ export const AuthProvider: React.FC = ({ children }) => {
     }
   }
 
+  async function signOut() {
+    setUser({} as User)
+    await AsyncStorage.removeItem(userStorageKey)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, signInWithGoogle, signInWithApple, userStorageLoading }}>
+    <AuthContext.Provider value={{ user, signInWithGoogle, signInWithApple, userStorageLoading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
