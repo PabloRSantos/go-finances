@@ -12,6 +12,7 @@ import * as S from './styles';
 import uuid from 'react-native-uuid'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { useAuth } from '../../hooks/auth';
 
 interface FormData {
   name: string;
@@ -27,6 +28,7 @@ const schema = Yup.object().shape({
 }).required()
 
 export const Register = () => {
+  const { user } = useAuth()
   const navigation = useNavigation()
   const [transactionType, setTransactionType] = useState('')
   const [categoryModalOpen, setCategoryModalOpen] = useState(false)
@@ -67,7 +69,7 @@ export const Register = () => {
     }
 
     try {
-      const dataKey = '@gofinances:transactions'
+      const dataKey = `@gofinances:transactions_user:${user.id}`
       const data = await AsyncStorage.getItem(dataKey)
       const currentData = data ? JSON.parse(data) : []
 

@@ -11,6 +11,7 @@ import { useTheme } from "styled-components/native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { addMonths, format, subMonths } from "date-fns";
 import { ActivityIndicator } from "react-native";
+import { useAuth } from "../../hooks/auth";
 
 interface TransactionData {
   type: "up" | "down";
@@ -31,6 +32,7 @@ interface CategoryData {
 
 export const Resume: React.FC = () => {
   const theme = useTheme();
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>(
@@ -48,7 +50,7 @@ export const Resume: React.FC = () => {
 
   async function loadData() {
     setIsLoading(true)
-    const dataKey = "@gofinances:transactions";
+    const dataKey = `@gofinances:transactions_user:${user.id}`
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted: TransactionData[] = response
       ? JSON.parse(response)
