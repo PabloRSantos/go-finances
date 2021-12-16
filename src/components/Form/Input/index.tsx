@@ -1,12 +1,12 @@
-import React from 'react';
-import { TextInputProps } from 'react-native';
+import React from "react";
+import { TextInputProps } from "react-native";
 
-import * as S from './styles';
+import * as S from "./styles";
 
-type Props = TextInputProps
+type Props = TextInputProps & {
+  active?: boolean;
+};
 
-export const Input = (props: Props) => {
-  return (
-    <S.Container {...props} />
-  );
+export const Input = ({ active = false, ...rest }: Props) => {
+  return <S.Container {...rest} active={active} />;
 };
