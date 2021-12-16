@@ -8,9 +8,9 @@ interface Props extends TouchableOpacityProps {
   onPress: () => void
 }
 
-export const CategorySelectButton: React.FC<Props> = ({ title, onPress }) => {
+export const CategorySelectButton: React.FC<Props> = ({ title, onPress, ...rest }) => {
   return (
-    <S.Container onPress={onPress}>
+    <S.Container onPress={onPress} {...rest}>
       <S.Category>
           {title}
       </S.Category>

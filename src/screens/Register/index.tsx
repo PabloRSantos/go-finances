@@ -132,13 +132,14 @@ export const Register = () => {
             <CategorySelectButton
               onPress={handleOpenSelectCategoryModal}
               title={category.name}
+              testID='button-category'
             />
           </S.Fields>
 
           <Button title="Enviar" onPress={handleSubmit(handleRegister)} />
         </S.Form>
 
-        <Modal visible={categoryModalOpen}>
+        <Modal testID='modal-category' visible={categoryModalOpen}>
           <CategorySelect
             category={category}
             setCategory={setCategory}
